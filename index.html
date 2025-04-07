@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الاختبارات الإلكترونية</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .hidden {
+            display: none;
+        }
+        .question-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .option {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            background-color: #f0f7fd;
+            border-color: #c4e3f3;
+        }
+        .option input {
+            margin-left: 10px;
+        }
+        .admin-panel {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+            border: 1px solid #eee;
+        }
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .admin-link:hover {
+            background-color: #1a252f;
+        }
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .navigation-buttons button {
+            width: 48%;
+        }
+        #prevBtn {
+            background-color: #95a5a6;
+        }
+        #prevBtn:hover {
+            background-color: #7f8c8d;
+        }
+        #nextBtn {
+            background-color: #3498db;
+        }
+        #nextBtn:hover {
+            background-color: #2980b9;
+        }
+        #submitBtn {
+            background-color: #27ae60;
+        }
+        #submitBtn:hover {
+            background-color: #219653;
+        }
+        .question-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fff;
+            border-left: 4px solid #ddd;
+        }
+        .correct {
+            border-left-color: #27ae60;
+            background-color: #e8f5e9;
+        }
+        .incorrect {
+            border-left-color: #e74c3c;
+            background-color: #ffebee;
+        }
+        .correct-answer {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .user-answer {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #27ae60;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .timer {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .actions button {
+            width: 32%;
+        }
+        #retakeBtn {
+            background-color: #3498db;
+        }
+        #viewResultsBtn {
+            background-color: #9b59b6;
+        }
+        #viewResultsBtn:hover {
+            background-color: #8e44ad;
+        }
+        #certificateBtn {
+            background-color: #27ae60;
+        }
+        .certificate {
+            background-color: #f9f9f9;
+            border: 15px solid #3498db;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .certificate:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" font-family="Arial" font-size="30" fill="rgba(0,0,0,0.1)" transform="rotate(45)">شهادة تقدير</text></svg>');
+            opacity: 0.3;
+            z-index: 0;
+        }
+        .certificate-content {
+            position: relative;
+            z-index: 1;
+        }
+        .certificate h2 {
+            color: #2c3e50;
+            font-size: 32px;
+            margin-bottom: 30px;
+            border-bottom: none;
+        }
+        .certificate h3 {
+            color: #3498db;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .certificate p {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+        .signature {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 200px;
+            display: inline-block;
+            margin-top: 50px;
+        }
+        .pass-message {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .fail-message {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        #saveCertificateBtn {
+            background-color: #3498db;
+        }
+        #backToResultsBtn {
+            background-color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <!-- رابط لوحة التحكم -->
+    <a href="#" class="admin-link" id="adminLink">لوحة التحكم</a>
+
+    <!-- واجهة بيانات الطالب -->
+    <div class="container" id="studentInfoForm">
+        <h1>نظام الاختبارات الإلكترونية</h1>
+        <form id="infoForm">
+            <div class="form-group">
+                <label for="studentName">اسم الطالب:</label>
+                <input type="text" id="studentName" name="studentName" required>
+            </div>
+            
+            
+            <button type="submit">بدء الاختبار</button>
+        </form>
+    </div>
+
+    <!-- واجهة الأسئلة (سؤال واحد في كل مرة) -->
+    <div class="container hidden" id="examForm">
+        <h1>الاختبار</h1>
+        <h2 id="studentInfoHeader"></h2>
+        
+        <div class="timer" id="timer">الوقت المتبقي: 05:00</div>
+        <div class="question-counter" id="questionCounter"></div>
+        
+        <form id="questionsForm">
+            <div id="questionsContainer">
+                <!-- الأسئلة سيتم عرضها هنا واحدًا تلو الآخر -->
+            </div>
+            
+            <div class="form-group hidden" id="notesSection">
+                <label for="studentNotes">ملاحظاتك (اختياري):</label>
+                <textarea id="studentNotes" rows="4"></textarea>
+            </div>
+            
+            <div class="navigation-buttons">
+                <button type="button" id="prevBtn" class="hidden">السابق</button>
+                <button type="button" id="nextBtn">التالي</button>
+                <button type="submit" id="submitBtn" class="hidden">إنهاء الاختبار</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- واجهة النتائج -->
+    <div class="container hidden" id="resultsForm">
+        <h1>نتيجة الاختبار</h1>
+        <h2 id="resultsStudentInfo"></h2>
+        
+        <div class="score-display" id="scoreDisplay"></div>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div id="resultsContainer">
+            <!-- النتائج التفصيلية تظهر هنا -->
+        </div>
+        
+        <div class="actions">
+            <button type="button" id="retakeBtn">إعادة الاختبار</button>
+            <button type="button" id="viewResultsBtn">عرض النتائج</button>
+            <button type="button" id="certificateBtn">الحصول على شهادة</button>
+        </div>
+    </div>
+
+    <!-- واجهة الشهادة -->
+    <div class="container hidden" id="certificateForm">
+        <div class="certificate" id="certificate">
+            <div class="certificate-content">
+                <h2>شهادة تقدير</h2>
+                <p>تقدم هذه الشهادة إلى</p>
+                <h3 id="certificateName"></h3>
+                <p>لقد حصل على درجة <span id="certificateScore"></span> في اختبار</p>
+                <p id="certificateMessage"></p>
+                <div class="signature">
+                    <div>
+                        <div class="signature-line"></div>
+                        <p>التاريخ: <span id="certificateDate"></span></p>
+                    </div>
+                    <div>
+                        <div class="signature-line"></div>
+                        <p>مدير النظام مرتضى البيضاني</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" id="saveCertificateBtn">حفظ الشهادة كصورة</button>
+        <button type="button" id="backToResultsBtn">العودة إلى النتائج</button>
+    </div>
+
+    <!-- لوحة التحكم -->
+    <div class="container hidden" id="adminPanel">
+        <h1>لوحة التحكم</h1>
+        
+        <div id="loginForm">
+            <div class="form-group">
+                <label for="adminPassword">كلمة المرور:</label>
+                <input type="password" id="adminPassword" name="adminPassword" required>
+            </div>
+            <button type="button" id="loginBtn">دخول</button>
+        </div>
+        
+        <div class="admin-panel hidden" id="controlPanel">
+            <h2>إضافة سؤال جديد</h2>
+            <div class="form-group">
+                <label for="questionText">نص السؤال:</label>
+                <input type="text" id="questionText" required>
+            </div>
+            
+            <div class="form-group">
+                <label>خيارات الإجابة:</label>
+                <input type="text" class="option-input" placeholder="الخيار الأول" required>
+                <input type="text" class="option-input" placeholder="الخيار الثاني" required>
+                <input type="text" class="option-input" placeholder="الخيار الثالث">
+                <input type="text" class="option-input" placeholder="الخيار الرابع">
+            </div>
+            
+            <div class="form-group">
+                <label for="correctAnswer">الإجابة الصحيحة (رقم الخيار):</label>
+                <input type="number" id="correctAnswer" min="1" max="4" required>
+            </div>
+            
+            <button type="button" id="addQuestionBtn">إضافة السؤال</button>
+            
+            <h2>الأسئلة المضافة</h2>
+            <div id="questionsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الأسئلة (سيتم تخزينها في localStorage)
+        let questions = JSON.parse(localStorage.getItem('examQuestions')) || [
+            {
+                text: "ما هي لغة البرمجة المستخدمة في تطوير تطبيقات iOS؟",
+                options: ["Java", "Swift", "Python", "C++"],
+                answer: 2
+            },
+            {
+                text: "ما هي أسرع الحيوانات البرية؟",
+                options: ["الأسد", "الفهد", "الغزال", "الحصان"],
+                answer: 2
+            }
+        ];
+
+        // كلمة مرور المدير
+        const ADMIN_PASSWORD = "1993";
+
+        // بيانات بوت التليجرام
+        const BOT_TOKEN = "7390077316:AAHNEtFesiXM7h6Wp4BmrAr7DluySaa79t4";
+        const CHAT_ID = "6670082375";
+
+        // متغيرات التتبع
+        let currentQuestionIndex = 0;
+        let answers = {};
+        let studentName = "";
+        let studentNotes = "";
+        let timer;
+        let timeLeft = 5 * 60; // 5 دقائق لكل سؤال بالثواني
+        let testResults = {};
+
+        // عناصر DOM
+        const studentInfoForm = document.getElementById('studentInfoForm');
+        const examForm = document.getElementById('examForm');
+        const resultsForm = document.getElementById('resultsForm');
+        const certificateForm = document.getElementById('certificateForm');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminLink = document.getElementById('adminLink');
+        const loginForm = document.getElementById('loginForm');
+        const controlPanel = document.getElementById('controlPanel');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const studentInfoHeader = document.getElementById('studentInfoHeader');
+        const resultsStudentInfo = document.getElementById('resultsStudentInfo');
+        const questionCounter = document.getElementById('questionCounter');
+        const timerElement = document.getElementById('timer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const notesSection = document.getElementById('notesSection');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const viewResultsBtn = document.getElementById('viewResultsBtn');
+        const certificateBtn = document.getElementById('certificateBtn');
+        const saveCertificateBtn = document.getElementById('saveCertificateBtn');
+        const backToResultsBtn = document.getElementById('backToResultsBtn');
+        const certificateName = document.getElementById('certificateName');
+        const certificateCollege = document.getElementById('certificateCollege');
+        const certificateScore = document.getElementById('certificateScore');
+        const certificateMessage = document.getElementById('certificateMessage');
+        const certificateDate = document.getElementById('certificateDate');
+        const certificateElement = document.getElementById('certificate');
+
+        // أحداث
+        document.getElementById('infoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            studentName = document.getElementById('studentName').value;
+
+            
+            studentInfoHeader.textContent = `الطالب: ${studentName} `;
+            studentInfoForm.classList.add('hidden');
+            examForm.classList.remove('hidden');
+            
+            startTimer();
+            displayQuestion(currentQuestionIndex);
+        });
+
+        document.getElementById('questionsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            studentNotes = document.getElementById('studentNotes').value;
+            clearInterval(timer);
+            showResults();
+        });
+
+        adminLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            studentInfoForm.classList.add('hidden');
+            examForm.classList.add('hidden');
+            resultsForm.classList.add('hidden');
+            certificateForm.classList.add('hidden');
+            adminPanel.classList.remove('hidden');
+            controlPanel.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                loginForm.classList.add('hidden');
+                controlPanel.classList.remove('hidden');
+                displayQuestionsList();
+            } else {
+                alert('كلمة المرور غير صحيحة!');
+            }
+        });
+
+        document.getElementById('addQuestionBtn').addEventListener('click', function() {
+            const questionText = document.getElementById('questionText').value;
+            const optionInputs = document.getElementsByClassName('option-input');
+            const options = Array.from(optionInputs)
+                                .map(opt => opt.value)
+                                .filter(opt => opt.trim() !== '');
+            const correctAnswer = parseInt(document.getElementById('correctAnswer').value);
+            
+            if (questionText && options.length >= 2 && correctAnswer >= 1 && correctAnswer <= options.length) {
+                questions.push({
+                    text: questionText,
+                    options: options,
+                    answer: correctAnswer
+                });
+                
+                localStorage.setItem('examQuestions', JSON.stringify(questions));
+                displayQuestionsList();
+                
+                // مسح حقول الإدخال
+                document.getElementById('questionText').value = '';
+                Array.from(optionInputs).forEach(opt => opt.value = '');
+                document.getElementById('correctAnswer').value = '';
+                
+                alert('تمت إضافة السؤال بنجاح!');
+            } else {
+                alert('الرجاء إدخال بيانات السؤال بشكل صحيح (على الأقل خيارين)');
+            }
+        });
+
+        prevBtn.addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                saveAnswer(currentQuestionIndex);
+                resetTimer();
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            saveAnswer(currentQuestionIndex);
+            resetTimer();
+            
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            }
+        });
+
+        retakeBtn.addEventListener('click', function() {
+            // إعادة تعيين المتغيرات
+            currentQuestionIndex = 0;
+            answers = {};
+            timeLeft = 5 * 60;
+            
+            // العودة إلى واجهة الأسئلة
+            resultsForm.classList.add('hidden');
+            examForm.classList.remove('hidden');
+            startTimer();
+            displayQuestion(currentQuestionIndex);
+        });
+
+        viewResultsBtn.addEventListener('click', function() {
+            displayDetailedResults();
+        });
+
+        certificateBtn.addEventListener('click', function() {
+            generateCertificate();
+            resultsForm.classList.add('hidden');
+            certificateForm.classList.remove('hidden');
+        });
+
+        saveCertificateBtn.addEventListener('click', function() {
+            saveCertificateAsImage();
+        });
+
+        backToResultsBtn.addEventListener('click', function() {
+            certificateForm.classList.add('hidden');
+            resultsForm.classList.remove('hidden');
+        });
+
+        // وظائف مساعدة
+        function displayQuestion(index) {
+            questionsContainer.innerHTML = '';
+            
+            const q = questions[index];
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+            
+            questionDiv.innerHTML = `
+                <div class="question-text">${index + 1}. ${q.text}</div>
+                ${q.options.map((opt, i) => `
+                    <label class="option">
+                        <input type="radio" name="question" value="${i + 1}" 
+                               ${answers[index] === i + 1 ? 'checked' : ''}>
+                        ${opt}
+                    </label>
+                `).join('')}
+            `;
+            
+            questionsContainer.appendChild(questionDiv);
+            updateNavigationButtons();
+            updateQuestionCounter();
+            
+            // إظهار قسم الملاحظات فقط في السؤال الأخير
+            if (index === questions.length - 1) {
+                notesSection.classList.remove('hidden');
+            } else {
+                notesSection.classList.add('hidden');
+            }
+        }
+
+        function saveAnswer(index) {
+            const selectedOption = document.querySelector('input[name="question"]:checked');
+            if (selectedOption) {
+                answers[index] = parseInt(selectedOption.value);
+            }
+        }
+
+        function updateNavigationButtons() {
+            // زر السابق
+            if (currentQuestionIndex === 0) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+            
+            // زر التالي/إنهاء
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function updateQuestionCounter() {
+            questionCounter.textContent = `السؤال ${currentQuestionIndex + 1} من ${questions.length}`;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            updateTimerDisplay();
+            timer = setInterval(function() {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (currentQuestionIndex < questions.length - 1) {
+                        nextBtn.click();
+                    } else {
+                        submitBtn.click();
+                    }
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            timeLeft = 5 * 60;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `الوقت المتبقي: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // تغيير اللون عندما يقل الوقت عن دقيقة
+            if (timeLeft < 60) {
+                timerElement.style.color = '#e74c3c';
+            } else {
+                timerElement.style.color = '#2c3e50';
+            }
+        }
+
+        function showResults() {
+            // حساب النتيجة
+            let score = 0;
+            const results = [];
+            
+            questions.forEach((q, index) => {
+                const userAnswer = answers[index] || 0;
+                const isCorrect = userAnswer === q.answer;
+                
+                if (isCorrect) {
+                    score++;
+                }
+                
+                results.push({
+                    question: q.text,
+                    options: q.options,
+                    correctAnswer: q.answer,
+                    userAnswer: userAnswer,
+                    isCorrect: isCorrect
+                });
+            });
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            // حفظ النتائج
+            testResults = {
+                studentName: studentName,
+                score: score,
+                totalQuestions: questions.length,
+                percentage: percentage,
+                results: results,
+                notes: studentNotes,
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+            
+            // عرض النتائج
+            examForm.classList.add('hidden');
+            resultsForm.classList.remove('hidden');
+            
+            resultsStudentInfo.textContent = `الطالب: ${studentName}`;
+            scoreDisplay.textContent = `درجتك: ${score} من ${questions.length} (${percentage}%)`;
+            progressBar.style.width = `${percentage}%`;
+            
+            // عرض ملخص النتائج
+            displayResultsSummary();
+            
+            // إرسال النتائج إلى بوت التليجرام
+            sendResultsToTelegram();
+        }
+
+        function displayResultsSummary() {
+            resultsContainer.innerHTML = `
+                <div class="result-container">
+                    <h3>ملخص النتائج</h3>
+                    <p>عدد الأسئلة: ${testResults.totalQuestions}</p>
+                    <p>الإجابات الصحيحة: ${testResults.score}</p>
+                    <p>النسبة المئوية: ${testResults.percentage}%</p>
+                    ${testResults.notes ? `<p>ملاحظاتك: ${testResults.notes}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function displayDetailedResults() {
+            resultsContainer.innerHTML = '';
+            testResults.results.forEach((result, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = `result-item ${result.isCorrect ? 'correct' : 'incorrect'}`;
+                
+                resultItem.innerHTML = `
+                    <div class="question-text">${index + 1}. ${result.question}</div>
+                    <div>إجابتك: <span class="user-answer">${result.userAnswer ? result.options[result.userAnswer - 1] : 'لم تجب'}</span></div>
+                    <div>الإجابة الصحيحة: <span class="correct-answer">${result.options[result.correctAnswer - 1]}</span></div>
+                    <div>${result.isCorrect ? '✔ إجابة صحيحة' : '✖ إجابة خاطئة'}</div>
+                `;
+                
+                resultsContainer.appendChild(resultItem);
+            });
+        }
+
+        function generateCertificate() {
+            certificateName.textContent = studentName;
+            certificateScore.textContent = `${testResults.score}/${testResults.totalQuestions} (${testResults.percentage}%)`;
+            certificateDate.textContent = testResults.date;
+            
+            if (testResults.percentage >= 50) {
+                certificateMessage.innerHTML = `<p class="pass-message">مبروك! لقد نجحت في الاختبار بنجاح.</p>
+                <p>نشكرك على جهودك ونتمنى لك المزيد من التقدم والنجاح.</p>`;
+            } else {
+                certificateMessage.innerHTML = `<p class="fail-message">نشكرك على المشاركة في الاختبار.</p>
+                <p>نحن نؤمن بقدراتك ونشجعك على المحاولة مرة أخرى لتحقيق نتيجة أفضل.</p>
+                <p>الفشل هو مجرد فرصة للبدء من جديد بذكاء أكبر.</p>`;
+            }
+        }
+
+        function saveCertificateAsImage() {
+            html2canvas(certificateElement, {
+                scale: 2, // زيادة الدقة
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `شهادة_${studentName}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+function sendResultsToTelegram() {
+    let message = `نتيجة اختبار جديدة:\n`;
+    message += `الطالب: ${studentName}\n`;
+    message += `النتيجة: ${testResults.score}/${testResults.totalQuestions} (${testResults.percentage}%)\n`;
+    message += `التاريخ: ${testResults.date}\n`;
+    if (testResults.notes) {
+        message += `ملاحظات الطالب: ${testResults.notes}\n`;
+    }
+    message += `\nتفاصيل الإجابات:\n`;
+    testResults.results.forEach((result, index) => {
+        message += `\nالسؤال ${index + 1}: ${result.question}\n`;
+        message += `الإجابة: ${result.userAnswer ? result.options[result.userAnswer - 1] : 'لم يجب'}\n`;
+        message += `الإجابة الصحيحة: ${result.options[result.correctAnswer - 1]}\n`;
+        message += `الحالة: ${result.isCorrect ? 'صحيحة ✔' : 'خاطئة ✖'}\n`;
+    });
+
+    // تأكد من أن الرسالة ليست طويلة جدًا
+    if (message.length > 4000) {
+        message = message.substring(0, 4000) + "... [تم اختصار الرسالة]";
+    }
+
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+    
+    // إرسال الطلب
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => console.log('تم إرسال النتائج إلى التليجرام'))
+        .catch(error => console.error('Error sending to Telegram:', error));
+}
+
+        function displayQuestionsList() {
+            const questionsList = document.getElementById('questionsList');
+            questionsList.innerHTML = '<ul>' + questions.map((q, index) => `
+                <li style="margin-bottom: 20px;">
+                    <div style="font-weight: bold;">${index + 1}. ${q.text}</div>
+                    <ul style="margin-top: 10px; margin-bottom: 10px;">
+                        ${q.options.map((opt, i) => `
+                            <li style="margin-bottom: 5px; ${i + 1 === q.answer ? 'color:green;font-weight:bold;' : ''}">
+                                ${i + 1}. ${opt}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="deleteQuestion(${index})" style="background-color: #e74c3c; padding: 5px 10px; border: none; border-radius: 3px; color: white; cursor: pointer;">حذف</button>
+                </li>
+            `).join('') + '</ul>';
+        }
+
+        // دالة حذف السؤال (يجب أن تكون عامة لتعمل من داخل displayQuestionsList)
+        window.deleteQuestion = function(index) {
+            if (confirm('هل أنت متأكد من حذف هذا السؤال؟')) {
+                questions.splice(index, 1);
+                localStorage.setItem('examQuestions', JSON.stringify(questions));
+                displayQuestionsList();
+            }
+        };
+    </script>
+</body>
+</html>
